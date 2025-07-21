@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### DB FILES ###
+data.db
+catalog.dat
