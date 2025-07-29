@@ -24,8 +24,8 @@ public class Main {
         PageManager pageManager = new PageManager(dataFile);
         CatalogStorage catalog = new CatalogStorage(catalogFile, pageManager);
 
-        /*TableSchema schema = new TableSchema(
-                "departments",
+        TableSchema schema = new TableSchema(
+                "admins",
                 Arrays.asList(new ColumnDef("id", DataType.INT),
                         new ColumnDef("name", DataType.STRING)),
                 0
@@ -40,9 +40,9 @@ public class Main {
             tree.insert(row);
         }
 
-        catalog.set(schema); */
+        catalog.set(schema);
 
-        TableSchema loadedSchema = catalog.get("student");
+        TableSchema loadedSchema = catalog.get("admins");
 
         System.out.println("Loaded Table: " + loadedSchema.tableName);
         for (ColumnDef col : loadedSchema.columns) {
@@ -50,33 +50,6 @@ public class Main {
         }
 
         loadedSchema.printAllRows(pageManager);
-
-        TableSchema loadedSchema1 = catalog.get("teacher");
-
-        System.out.println("Loaded Table: " + loadedSchema.tableName);
-        for (ColumnDef col : loadedSchema1.columns) {
-            System.out.println("  - " + col.name + " : " + col.type);
-        }
-
-        loadedSchema1.printAllRows(pageManager);
-
-        TableSchema loadedSchema2 = catalog.get("admins");
-
-        System.out.println("Loaded Table: " + loadedSchema2.tableName);
-        for (ColumnDef col : loadedSchema2.columns) {
-            System.out.println("  - " + col.name + " : " + col.type);
-        }
-
-        loadedSchema2.printAllRows(pageManager);
-
-        TableSchema loadedSchema3 = catalog.get("departments");
-
-        System.out.println("Loaded Table: " + loadedSchema3.tableName);
-        for (ColumnDef col : loadedSchema3.columns) {
-            System.out.println("  - " + col.name + " : " + col.type);
-        }
-
-        loadedSchema3.printAllRows(pageManager);
 
         System.out.println("This is a DB Implementation from scratch");
     }
