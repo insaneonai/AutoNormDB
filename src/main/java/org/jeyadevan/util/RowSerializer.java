@@ -38,7 +38,7 @@ public class RowSerializer {
         return baos.toByteArray();
     }
 
-    public static Row deseriazlieRow(byte[] data, TableSchema schema) throws IOException{
+    public static Row deserialize(byte[] data, TableSchema schema) throws IOException{
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
 
         List<ColumnDef> cols = schema.columns;

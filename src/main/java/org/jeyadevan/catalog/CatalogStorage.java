@@ -30,9 +30,10 @@ public class CatalogStorage implements ICatalogInterface {
                 String name = new String(nameBuf, StandardCharsets.UTF_8).trim();
                 int pageNo = catalogFile.readInt();
                 int length = catalogFile.readInt();
-
                 if (name.equals(tableName)){
                     byte[] data = pageManager.readPage(pageNo, length);
+                    System.out.println("Found entry: name=" + name +
+                            ", pageNo=" + pageNo + ", length=" + length);
                     return Serializer.deserializeSchema(data);
                 }
             }
@@ -49,11 +50,12 @@ public class CatalogStorage implements ICatalogInterface {
         try{
             byte[] serialized = Serializer.serializeSchema(schema);
             int pageNo = pageManager.allocatePage();
+            System.out.println("Writing schema: " + schema.tableName +
+                    " at pageNo=" + pageNo + ", length=" + serialized.length);
             pageManager.writePage(pageNo, serialized);
 
             byte[] schemaName = schema.tableName.getBytes(StandardCharsets.UTF_8);
             byte[] fixedName = new byte[Constants.MAX_NAME_LENGTH];
-
 
             // Truncate Name if exceeds 64 bytes;
             System.arraycopy(schemaName, 0, fixedName, 0, Math.min(schemaName.length, Constants.MAX_NAME_LENGTH));

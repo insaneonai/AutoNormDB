@@ -6,7 +6,7 @@ import org.jeyadevan.storage.Constants;
 import java.io.*;
 
 public class NodeSerializer {
-    public static byte[] serializeNode(Node node) throws IOException {
+    public static byte[] serializeNode(Node node, boolean shouldPad) throws IOException {
         ByteArrayOutputStream boas = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(boas);
 
@@ -35,6 +35,11 @@ public class NodeSerializer {
         dos.flush();
 
         byte[] data = boas.toByteArray();
+
+        if (!shouldPad){
+            return data;
+        }
+
 
         if (data.length > Constants.PAGE_SIZE){
             throw new IOException("Page limit Exceeded");
