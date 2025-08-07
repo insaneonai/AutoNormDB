@@ -63,10 +63,6 @@ public class PageManager implements IPageManager {
             byte[] padded = new byte[Constants.PAGE_SIZE];
             System.arraycopy(data, 0, padded, 0, data.length);
 
-            System.out.println("Padded length "+ padded.length);
-
-            System.out.println("SEEKING: " + (long) pageNo * Constants.PAGE_SIZE);
-
             file.seek((long) pageNo * Constants.PAGE_SIZE);
             file.write(padded);
         }

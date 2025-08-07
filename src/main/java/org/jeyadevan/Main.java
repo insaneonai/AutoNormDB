@@ -1,21 +1,20 @@
 package org.jeyadevan;
 
-import org.jeyadevan.bptree.BPlusTree;
 import org.jeyadevan.catalog.CatalogStorage;
 import org.jeyadevan.db.ColumnDef;
 import org.jeyadevan.db.DataType;
-import org.jeyadevan.db.TableSchema;
 import org.jeyadevan.io.PageManager;
 import org.jeyadevan.storage.Constants;
 import org.jeyadevan.db.Row;
+import org.jeyadevan.db.TableFactory;
+import org.jeyadevan.db.Table;
 
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
+
 public class Main {
     public static void main(String[] args) throws Exception {
         File dataFile = new File(Constants.DATA_FILE);
@@ -24,34 +23,33 @@ public class Main {
         PageManager pageManager = new PageManager(dataFile);
         CatalogStorage catalog = new CatalogStorage(catalogFile, pageManager);
 
-        TableSchema schema = new TableSchema(
-                "admins",
-                Arrays.asList(new ColumnDef("id", DataType.INT),
-                        new ColumnDef("name", DataType.STRING)),
-                0
+        // Create a new table
+        List<ColumnDef> columns = List.of(
+                new ColumnDef("id", DataType.INT),
+                new ColumnDef("name", DataType.STRING)
         );
+        Table table = TableFactory.createNew("admins", columns, pageManager, catalog);
 
-        int rootPage = pageManager.allocatePage();
-
-        BPlusTree tree = new BPlusTree(pageManager, rootPage, schema, Constants.PAGE_SIZE);
-
-        for (int i=0; i<=3; i++){
-            Row row = new Row(List.of(i, "Name" + i));
-            tree.insert(row);
+        for (int i = 0; i <= 3; i++) {
+            Row row = new Row(List.of(i, "Name " + i));
+            table.insert(row);
         }
 
-        catalog.set(schema);
-
-        TableSchema loadedSchema = catalog.get("admins");
-
-        System.out.println("Loaded Table: " + loadedSchema.tableName);
-        for (ColumnDef col : loadedSchema.columns) {
+        // Load table from catalog and print
+        Table loaded = TableFactory.load("admins", pageManager, catalog);
+        System.out.println("Loaded Table: " + loaded.getSchema().tableName);
+        for (ColumnDef col : loaded.getSchema().columns) {
             System.out.println("  - " + col.name + " : " + col.type);
         }
 
-        loadedSchema.printAllRows(pageManager);
-
+        System.out.println("All rows");
+        loaded.getAllRows();
+        System.out.println("2 rows");
+        loaded.getAllRows(2);
+        System.out.println("row where key -> 1");
+        loaded.searchByKey(1);
+        System.out.println("Search By value -> name 2");
+        loaded.searchByValue("Name 2", "name");
         System.out.println("This is a DB Implementation from scratch");
     }
-
 }

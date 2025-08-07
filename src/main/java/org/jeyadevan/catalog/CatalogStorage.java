@@ -1,5 +1,6 @@
 package org.jeyadevan.catalog;
 
+import org.jeyadevan.db.TableFactory;
 import org.jeyadevan.db.TableSchema;
 import org.jeyadevan.io.PageManager;
 import org.jeyadevan.storage.Constants;
@@ -32,8 +33,6 @@ public class CatalogStorage implements ICatalogInterface {
                 int length = catalogFile.readInt();
                 if (name.equals(tableName)){
                     byte[] data = pageManager.readPage(pageNo, length);
-                    System.out.println("Found entry: name=" + name +
-                            ", pageNo=" + pageNo + ", length=" + length);
                     return Serializer.deserializeSchema(data);
                 }
             }
@@ -50,6 +49,13 @@ public class CatalogStorage implements ICatalogInterface {
         try{
             byte[] serialized = Serializer.serializeSchema(schema);
             int pageNo = pageManager.allocatePage();
+            // Check if the table already exists.
+            TableSchema existAlready = this.get(schema.tableName);
+
+            if (existAlready != null){
+                throw new RuntimeException(String.format("Table with name %s already exist.", schema.tableName));
+            }
+
             System.out.println("Writing schema: " + schema.tableName +
                     " at pageNo=" + pageNo + ", length=" + serialized.length);
             pageManager.writePage(pageNo, serialized);
