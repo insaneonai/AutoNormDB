@@ -29,6 +29,7 @@ jobs:
         cache: maven
     - name: Remove db files
       run: |
+        ls -la
         rm catalog.dat
         rm data.db
         rm data.db.meta
