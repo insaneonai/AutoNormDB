@@ -29,10 +29,10 @@ jobs:
         cache: maven
     - name: Remove db files
       run: |
-        ls -la
-        rm catalog.dat
-        rm data.db
-        rm data.db.meta
+        ls -R
+        rm -f catalog.dat
+        rm -f data.db
+        rm -f data.db.meta
         echo "Removed db files."
     - name: Build with Maven
       run: mvn -B package --file pom.xml
