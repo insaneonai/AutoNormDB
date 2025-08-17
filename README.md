@@ -7,7 +7,7 @@
 ## 🚧 Project Status
 
 > **Current Focus**: Persistence layer  
-> **Next Up**: Indexing (B+ Tree), Concurrency, SQL Parser, and ACID compliance
+> **Next Up**: Concurrency, SQL Parser, and ACID compliance
 
 ---
 
@@ -22,14 +22,26 @@
 - 📦 **Row Storage**  
   Basic row insertion and retrieval.
 
+- Operations Supported (As of Now):
+  - Create Table
+  - Insert Rows
+  - Read all Rows
+  - Read with Limit
+  - Update by key
+  - Update by value
+  - Search by key
+  - Search by value
+  - Read Schema Info
+
 ---
 
 ## 🔜 Roadmap
 
 - [x] Schema support
 - [x] Row and node serialization
-- [ ] Persistent storage system (in progress)
-- [ ] B+ Tree indexing
+- [x] Persistent storage system (in progress)
+- [x] B+ Tree indexing (Primary)
+- [ ] B+ Tree Partial indexing
 - [ ] SQL parser
 - [ ] ACID transaction support
 - [ ] Concurrency control (locking, isolation levels)
