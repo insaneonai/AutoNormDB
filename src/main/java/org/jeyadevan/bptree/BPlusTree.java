@@ -355,4 +355,90 @@ public class BPlusTree {
         }
         return rows;
     }
+
+    public boolean updateByKey(Object keyValue, int colIndex, Object newValue) throws Exception{
+        byte[] key = extractKeyFromObj(keyValue);
+
+        // Navigate to leaf.
+        int pageNo = rootPage;
+
+        byte[] data = pageManager.readPage(pageNo, Constants.PAGE_SIZE);
+
+        Node node = NodeSerializer.deserializeNode(data);
+
+        while (!node.isLeaf){
+            int idx = findChildIndex(node.keys, key);
+            pageNo = node.childrens.get(idx);
+            data = pageManager.readPage(pageNo, Constants.PAGE_SIZE);
+            node = NodeSerializer.deserializeNode(data);
+        }
+
+        int updatedCount = 0;
+
+        for (int i=0; i<node.keys.size(); i++){
+            if (compare(node.keys.get(i), key) == 0){
+                Row rowFound = RowSerializer.deserialize(node.values.get(i), schema);
+                rowFound.values.set(colIndex, newValue);
+
+                byte[] rowSerialized = RowSerializer.serializeRow(rowFound, schema);
+                node.values.set(i, rowSerialized);
+
+                // write back;
+                pageManager.writePage(pageNo, NodeSerializer.serializeNode(node, true));
+
+                updatedCount++;
+            }
+        }
+
+        return updatedCount > 0;
+    }
+
+    public boolean updateByValue(Object keyValue, int keyColumn, Object value, int valueColumn) throws Exception{
+        // Navigate to leaf;
+
+        int pageNo = rootPage;
+
+        byte[] indexData = pageManager.readPage(pageNo, Constants.PAGE_SIZE);
+
+        Node node = NodeSerializer.deserializeNode(indexData);
+
+        while(!node.isLeaf){
+            pageNo = node.childrens.getFirst();
+            node = NodeSerializer.deserializeNode(pageManager.readPage(pageNo, Constants.PAGE_SIZE));
+        }
+
+        int updatedCount = 0;
+
+        while (true){
+            boolean modified = false;
+
+            for (int i=0; i<node.values.size(); i++){
+                byte[] rowByte = node.values.get(i);
+
+                Row row = RowSerializer.deserialize(rowByte, schema);
+
+                if (row.values.get(keyColumn).equals(keyValue)){
+                    // Row to update is found.
+                    row.values.set(valueColumn, value);
+                    byte[] rowSerialized = RowSerializer.serializeRow(row, schema);
+                    node.values.set(i, rowSerialized);
+                    updatedCount++;
+                    modified = true;
+                }
+            }
+
+            // write back
+            if (modified){
+                pageManager.writePage(pageNo, NodeSerializer.serializeNode(node, true));
+            }
+
+            if (node.nextPage == -1) break;
+
+            pageNo = node.nextPage;
+            node = NodeSerializer.deserializeNode(pageManager.readPage(pageNo, Constants.PAGE_SIZE));
+        }
+
+        return updatedCount > 0;
+
+    }
 }

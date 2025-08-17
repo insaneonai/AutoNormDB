@@ -66,6 +66,54 @@ public class Table {
 
     }
 
+    public void updateByKey(Object key, String column, Object value) throws Exception{
+        int colIndex = -1;
+
+        for (int i=0; i<schema.columns.size(); i++){
+            if (schema.columns.get(i).name.equals(column)){
+                colIndex = i;
+                break;
+            }
+        }
+
+        boolean result = tree.updateByKey(key, colIndex, value);
+
+        if (result){
+            System.out.println("Table updated.");
+        }
+        else{
+            System.out.println("No matching row found to update.");
+        }
+    }
+
+    public void updateByValue(Object key, String keyColumn, Object value, String valueColumn) throws Exception{
+        int keyColIndex = -1;
+        int valueColIndex = -1;
+
+        for (int i=0; i<schema.columns.size(); i++){
+            if (schema.columns.get(i).name.equals(keyColumn)){
+                keyColIndex = i;
+                break;
+            }
+        }
+
+        for (int i=0; i<schema.columns.size(); i++){
+            if (schema.columns.get(i).name.equals(valueColumn)){
+                valueColIndex = i;
+                break;
+            }
+        }
+
+        boolean result = tree.updateByValue(key, keyColIndex, value, valueColIndex);
+
+        if (result){
+            System.out.println("Table updated.");
+        }
+        else{
+            System.out.println("No matching row found to update.");
+        }
+    }
+
     public TableSchema getSchema(){
         return schema;
     }
