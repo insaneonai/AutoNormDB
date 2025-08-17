@@ -42,6 +42,7 @@
 - [x] Persistent storage system (in progress)
 - [x] B+ Tree indexing (Primary)
 - [ ] B+ Tree Partial indexing
+- [ ] Free List Management
 - [ ] SQL parser
 - [ ] ACID transaction support
 - [ ] Concurrency control (locking, isolation levels)
